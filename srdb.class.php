@@ -835,7 +835,17 @@ class icit_srdb {
             } elseif ( is_array( $data ) ) {
                 $_tmp = array();
                 foreach ( $data as $key => $value ) {
-                    $_tmp[ $key ] = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					$newkey = $this->recursive_unserialize_replace( $from, $to, $key, false );
+					
+					// new key already exists, so just replace the value
+					if( array_key_exists( $newkey, $_tmp ) ){
+						$_tmp[ $key ] = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					
+					// new key does not exist, replace both key and value
+					} else {
+						unset( $_tmp[ $key ] );
+						$_tmp[ $newkey ] = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					}
                 }
 
                 $data = $_tmp;
@@ -844,7 +854,17 @@ class icit_srdb {
                 $_tmp  = $data;
                 $props = get_object_vars( $data );
                 foreach ( $props as $key => $value ) {
-                    $_tmp->$key = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					$newkey = $this->recursive_unserialize_replace( $from, $to, $key, false );
+					
+					// new key already exists, so just replace the value
+					if( property_exists( $_tmp, $newkey ) ){					) ){
+						$_tmp->$key = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					
+					// new key does not exist, replace both key and value
+					} else {
+						unset( $tmp->$key );
+						$_tmp->$newkey = $this->recursive_unserialize_replace( $from, $to, $value, false );
+					}
                 }
 
                 $data = $_tmp;
